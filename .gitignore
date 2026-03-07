@@ -1,1 +1,4 @@
 .env
+setup.log
+*.deb
+wget-log
