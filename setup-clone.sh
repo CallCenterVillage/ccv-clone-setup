@@ -71,7 +71,11 @@ read -rp "Proceed? (y/N) " CONFIRM
 echo ""
 echo "[1/3] Setting hostname to '$HOSTNAME'..."
 hostnamectl set-hostname "$HOSTNAME"
-sed -i "s/127.0.1.1.*/127.0.1.1\t${HOSTNAME}/" /etc/hosts
+if grep -q "^127.0.1.1" /etc/hosts; then
+    sed -i "s/127.0.1.1.*/127.0.1.1\t${HOSTNAME}/" /etc/hosts
+else
+    echo -e "127.0.1.1\t${HOSTNAME}" >> /etc/hosts
+fi
 echo "  Done."
 
 # =============================================================================
