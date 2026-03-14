@@ -69,7 +69,7 @@ read -rp "Proceed? (y/N) " CONFIRM
 # =============================================================================
 
 echo ""
-echo "[1/3] Setting hostname to '$HOSTNAME'..."
+echo "[1/4] Setting hostname to '$HOSTNAME'..."
 hostnamectl set-hostname "$HOSTNAME"
 if grep -q "^127.0.1.1" /etc/hosts; then
     sed -i "s/127.0.1.1.*/127.0.1.1\t${HOSTNAME}/" /etc/hosts
@@ -83,7 +83,7 @@ echo "  Done."
 # =============================================================================
 
 echo ""
-echo "[2/3] Installing Antivirus..."
+echo "[2/4] Installing Antivirus..."
 dpkg -i "$AV_DEB"
 /opt/sentinelone/bin/sentinelctl management token set "$AV_SITE_TOKEN"
 /opt/sentinelone/bin/sentinelctl control start
@@ -94,11 +94,23 @@ echo "  Done."
 # =============================================================================
 
 echo ""
-echo "[3/3] Installing RMM agent..."
+echo "[3/4] Installing RMM agent..."
 curl -fsSL "$RMM_INSTALL_URL" -o /tmp/rmm-install.sh
 chmod +x /tmp/rmm-install.sh
 bash /tmp/rmm-install.sh
 rm -f /tmp/rmm-install.sh
+echo "  Done."
+
+# =============================================================================
+# STEP 4 — Halloy IRC config
+# =============================================================================
+
+echo ""
+echo "[4/4] Installing Halloy config..."
+HALLOY_DIR="/home/callcentervillage/.var/app/org.squidowl.halloy/config/halloy"
+mkdir -p "$HALLOY_DIR"
+sed "s/nickname = \"ccvXX\"/nickname = \"$HOSTNAME\"/" "$SCRIPT_DIR/halloy.toml" > "$HALLOY_DIR/config.toml"
+chown -R callcentervillage:callcentervillage "$HALLOY_DIR"
 echo "  Done."
 
 # =============================================================================
